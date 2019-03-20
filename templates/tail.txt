@@ -1,0 +1,11 @@
+	</div>
+	<a href="blog.html">&crarr;</a>
+<footer>
+<hr>
+	<div>
+		© 2019 Parth Parikh.
+	</div>
+</footer>
+
+</body>
+</html>
