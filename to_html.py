@@ -17,12 +17,12 @@ Also looks clean while debugging!!
 '''
 TODO:	
 >> ======= support for <h1>
->> prettify with tabs
 >> spelling error detection
 >> grammatical mistake detection
 >> ordered list [ done ]
 >> unordered list [ done ]
 >> simple blockquotes [ done ]
+>> prettify with tabs [ not supporting for time being ]
 '''
 
 class Convert:
@@ -40,15 +40,25 @@ class Convert:
 		self.ol_flag = False
 
 	def add_filepath(self):
+		'''
+		To add a filepath via command line
+		Checks the validity of the filepath
+		If the path is valid, will ask for the HTML title
+		( If you are sure of validity of file-path, change self.filepath and self.blog_title directly )
+		'''
 		self.filepath = input("Enter filepath: ")
 		if not self.is_valid_file():
 			print("filepath" + str(self.filepath) + "does not exists")
 			exit(0)
 		else:
 			self.open_file()
-			self.blog_title = input("Enter blog title: ")
+			self.blog_title = input("Enter title: ")
 
 	def load_head(self):
+		'''
+		returns the head contents from the head_path
+		( head content is content which will be appended to the head of the html file )
+		'''
 		lines = list()
 		with open(self.head_path, 'r') as f:
 			lines = [line.strip() for line in f.readlines()]
@@ -57,19 +67,32 @@ class Convert:
 		return lines
 
 	def load_tail(self):
+		'''
+		returns the tail contents from the tail_path
+		( tail content is content which will be appended to the tail of the html file )
+		'''
 		lines = list()
 		with open(self.tail_path, 'r') as f:
 			lines = [line.strip() for line in f.readlines()]
 		return lines
 
 	def is_valid_file(self):
+		'''
+		returns True if self.filepath is valid
+		'''
 		return path.isfile(self.filepath)
 
 	def open_file(self):
+		'''
+		reads contents from self.filepath
+		'''
 		with open(self.filepath, 'r') as f:
 			self.contents = [line.strip() for line in f.readlines()]
 
 	def italic_parse(self, line):
+		'''
+		returns the italic parsed line
+		'''
 		italics = re.findall("([_].*?[_])", line)
 		for word in italics:
 			change = "<i>" + word[1:-1] + "</i>"
@@ -77,6 +100,9 @@ class Convert:
 		return line
 
 	def bold_parse(self, line):
+		'''
+		returns the bold parsed line
+		'''
 		bold = re.findall("([*]{2}.*?[*]{2})", line)
 		for word in bold:
 			change = "<b>" + word[2:-2] + "</b>"
@@ -84,6 +110,9 @@ class Convert:
 		return line
 
 	def code_parse(self, line):
+		'''
+		returns the code parsed line
+		'''
 		code = re.findall("([`].*?[`])", line)
 		for word in code:
 			change = "<pre>" + word[1:-1] + "</pre>"
@@ -91,42 +120,66 @@ class Convert:
 		return line
 
 	def header_1(self, line):
+		'''
+		returns the # ( h1 ) parsed line
+		'''
 		head = re.findall("(?m)^#{1}(?!#)(.*)", line)
 		if head != list():
 			line = "<h1>" + head[0].strip() + "</h1>"
 			return line
 
 	def header_2(self, line):
+		'''
+		returns the ## ( h2 ) parsed line
+		'''
 		head = re.findall("(?m)^#{2}(?!#)(.*)", line)
 		if head != list():
 			line = "<h2>" + head[0].strip() + "</h2>"
 			return line
 
 	def header_3(self, line):
+		'''
+		returns the ### ( h3 ) parsed line
+		'''
 		head = re.findall("(?m)^#{3}(?!#)(.*)", line)
 		if head != list():
 			line = "<h3>" + head[0].strip() + "</h3>"
 			return line
 
 	def check_not_ul(self, line):
+		'''
+		returns False if unordered list
+		else returns True
+		'''
 		try:
 			return False if (line[0] == '-' and line[1] == ' ') else True
 		except:
 			return True
 
 	def check_not_ol(self, line):
+		'''
+		returns False if ordered list
+		else returns True
+		'''
 		try:
 			return False if (line[0].isnumeric() and line[1] == '.' and line[2].isspace()) else True
 		except:
 			return True
 
 	def check_not_blockquote(self, line):
+		'''
+		returns False if contains blockquote
+		else returns True
+		'''
 		try:
 			return False if (line[:2] == '> ') else True
 		except:
 			return True
 
 	def para_parse(self, line):
+		'''
+		returns the paragraph parsed line
+		'''
 		para = re.findall("(.*)", line)
 		not_contain_misc = len(set(para).intersection(set(['<hr>']))) == 0
 		not_contains_header = len(set(para[0][:3]).intersection(set(['#', '##', "###"]))) == 0
@@ -138,10 +191,16 @@ class Convert:
 			return line
 
 	def hr_parse(self, line):
+		'''
+		returns the horizontal rule parsed line
+		'''
 		if line == '---':
 			return "<hr>"
 
 	def link_parse(self, line):
+		'''
+		returns the link parsed line
+		'''
 		links = re.findall("[^!]\[(.*?)\]\((.*?)\)", line)
 		if links != list():
 			for link in links:
@@ -151,6 +210,9 @@ class Convert:
 			return line
 
 	def img_parse(self, line):
+		'''
+		returns the image parsed line
+		'''
 		imgs = re.findall("!\[(.*?)\]\((.*?)\)", line)
 		if imgs != list():
 			for img in imgs:
@@ -160,6 +222,9 @@ class Convert:
 			return line
 
 	def ul_parse(self, line, next_line):
+		'''
+		returns the unordered list parsed line
+		'''
 		uls = re.findall("(?m)^(-)(.*)", line)
 		if uls != list():
 			for ul in uls:
@@ -172,10 +237,15 @@ class Convert:
 				elif self.check_not_ul(next_line) == True and self.ul_flag == True:
 					change = "<li>" + sent + "</li></ul>"
 					self.ul_flag = False
+				elif self.check_not_ul(next_line) == True and self.ul_flag == False:
+					change = "<ul><li>"	+ sent + "</li></ul>"
 				line = line.replace(ul[0]+ul[1], change)
 			return line
 
 	def ol_parse(self, line, next_line):
+		'''
+		returns the ordered list parsed line
+		'''
 		ols = re.findall("^(\d\.)(.*)", line)
 		if ols != list():
 			for ol in ols:
@@ -188,10 +258,15 @@ class Convert:
 				elif self.check_not_ol(next_line) == True and self.ol_flag == True:
 					change = "<li>" + sent + "</li></ol>"
 					self.ol_flag = False
+				elif self.check_not_ol(next_line) == True and self.ol_flag == False:
+					change = "<ol><li>"	+ sent + "</li></ol>"
 				line = line.replace(ol[0]+ol[1], change)
 			return line
 
 	def blockquote_parse(self, line):
+		'''
+		returns the blockquote parsed line
+		'''
 		blocks = re.findall("^(> )(.*)", line)
 		if blocks != list():
 			change = "<blockquote>" + blocks[0][1] + "</blockquote>"
@@ -199,6 +274,10 @@ class Convert:
 		return line
 
 	def parse(self):
+		'''
+		main parsing method used for parsing self.contents
+		prints 'done!' if parsed successfully
+		'''
 		methods, parsed = [self.hr_parse, 
 							self.para_parse, 
 							self.blockquote_parse,
@@ -229,6 +308,9 @@ class Convert:
 		print("done!")
 
 	def save_parsed_html(self):
+		'''
+		saves the parsed html file
+		'''
 		head = self.load_head()
 		tail = self.load_tail()
 		body = self.contents
@@ -240,6 +322,9 @@ class Convert:
 			f.close()
 
 	def prettify(self):
+		'''
+		opens and saves the HTML file after indenting the code ( tabs NOT supported )
+		'''
 		lines = list()
 		with open(self.blog_title+'.html', 'r') as f:
 			lines = f.readlines()
