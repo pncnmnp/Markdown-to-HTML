@@ -1,7 +1,14 @@
-This blog is written using a Markdown parser I just created. The indentation supported in my entire website is about 160mm or something.
-Thought I would automate my **blogging** platform.
-
-For my usual blogs, visit [pncnmnp.github.io](https://pncnmnp.github.io/blogs/blog.html). Here you will find blogs with contexts like _privacy_, _computer architecture_ and some _personal updates_.
-
-_That's it Folks!_
-_Bye_
+# this is a demo
+hi there!
+trying to _create_ an unordered list example
+- First item
+- Second item - la la la 
+- Third item
+hi there - how are you ?
+here is a [link](https://example.com) demo.
+1. First item
+2. Second item
+3. Third item
+hi there 3. some other test cases
+s3. other cases
+here is an ![image](https://example.com/pics) demo.
