@@ -1,7 +1,7 @@
 from os import path
 from sys import exit
 import re
-from bs4 import BeautifulSoup as bs
+from bs4 import BeautifulSoup as bs # use if you want prettify feature, else feel free to uncomment it
 
 '''
 NOTE: This code is written to automate my blogging process to some extent.
@@ -10,12 +10,19 @@ NOTE: This code is written to automate my blogging process to some extent.
 '''
 
 '''
-TODO:	1. ordered list [ done ]
-		2. unordered list [ done ]
-		3. blockquotes
-		4. prettify with tabs
-		5. spelling error detection
-		6. grammatical mistake detection
+Why have I used Regex instead of string manipulation ? - 1 word -> IndexError!!
+Also looks clean while debugging!!
+'''
+
+'''
+TODO:	
+>> ======= support for <h1>
+>> prettify with tabs
+>> spelling error detection
+>> grammatical mistake detection
+>> ordered list [ done ]
+>> unordered list [ done ]
+>> simple blockquotes [ done ]
 '''
 
 class Convert:
@@ -113,13 +120,20 @@ class Convert:
 		except:
 			return True
 
+	def check_not_blockquote(self, line):
+		try:
+			return False if (line[:2] == '> ') else True
+		except:
+			return True
+
 	def para_parse(self, line):
 		para = re.findall("(.*)", line)
 		not_contain_misc = len(set(para).intersection(set(['<hr>']))) == 0
 		not_contains_header = len(set(para[0][:3]).intersection(set(['#', '##', "###"]))) == 0
 		not_contains_ul_list = self.check_not_ul(para[0])
 		not_contains_ol_list = self.check_not_ol(para[0])
-		if para != list() and not_contain_misc and not_contains_header and not_contains_ul_list and not_contains_ol_list:
+		not_contains_blockquote = self.check_not_blockquote(para[0])
+		if para != list() and not_contain_misc and not_contains_header and not_contains_ul_list and not_contains_ol_list and not_contains_blockquote:
 			line = "<p>" + para[0] + "</p>"
 			return line
 
@@ -177,9 +191,17 @@ class Convert:
 				line = line.replace(ol[0]+ol[1], change)
 			return line
 
+	def blockquote_parse(self, line):
+		blocks = re.findall("^(> )(.*)", line)
+		if blocks != list():
+			change = "<blockquote>" + blocks[0][1] + "</blockquote>"
+			line  = line.replace(line, change)
+		return line
+
 	def parse(self):
 		methods, parsed = [self.hr_parse, 
 							self.para_parse, 
+							self.blockquote_parse,
 							self.ol_parse,
 							self.ul_parse,
 							self.link_parse, 
