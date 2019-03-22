@@ -16,12 +16,12 @@ Also looks clean while debugging!!
 
 '''
 TODO:	
->> ======= support for <h1>
 >> spelling error detection
 >> grammatical mistake detection
 >> ordered list [ done ]
 >> unordered list [ done ]
 >> simple blockquotes [ done ]
+>> ======= support for <h1> [ done ]
 >> prettify with tabs [ not supporting for time being ]
 '''
 
@@ -119,13 +119,18 @@ class Convert:
 			line = line.replace(word, change)
 		return line
 
-	def header_1(self, line):
+	def header_1(self, line, next_line):
 		'''
 		returns the # ( h1 ) parsed line
+		next_line parameter is used to check for "=====" condition 
 		'''
 		head = re.findall("(?m)^#{1}(?!#)(.*)", line)
 		if head != list():
 			line = "<h1>" + head[0].strip() + "</h1>"
+			return line
+		elif next_line == len(line)*'=':
+			line = "<h1>" + line.strip() + "</h1>"
+			self.contents.remove(next_line)
 			return line
 
 	def header_2(self, line):
@@ -279,6 +284,7 @@ class Convert:
 		prints 'done!' if parsed successfully
 		'''
 		methods, parsed = [self.hr_parse, 
+							self.header_1, 
 							self.para_parse, 
 							self.blockquote_parse,
 							self.ol_parse,
@@ -288,23 +294,25 @@ class Convert:
 							self.italic_parse, 
 							self.bold_parse, 
 							self.code_parse, 
-							self.header_1, 
 							self.header_2, 
 							self.header_3], ''
 		for line in range(len(self.contents)):
-			for method in methods:
-				# To insert <ol></ol> and <ul></ul> tags
-				if method == self.ol_parse or method == self.ul_parse:
-					try:
-						parsed = method(self.contents[line], self.contents[line+1])
-					except IndexError:
-						parsed = method(self.contents[line], '')
-				else:
-					parsed = method(self.contents[line])
+			try:
+				for method in methods:
+					# To insert <ol></ol> and <ul></ul> tags
+					if method == self.ol_parse or method == self.ul_parse or method == self.header_1:
+						try:
+							parsed = method(self.contents[line], self.contents[line+1])
+						except IndexError:
+							parsed = method(self.contents[line], '')
+					else:
+						parsed = method(self.contents[line])
 
-				if parsed:
-					self.contents[line] = self.contents[line].replace(self.contents[line], parsed)
-			print(self.contents[line])
+					if parsed:
+						self.contents[line] = self.contents[line].replace(self.contents[line], parsed)
+				print(self.contents[line])
+			except IndexError:
+				pass
 		print("done!")
 
 	def save_parsed_html(self):
