@@ -1,7 +1,7 @@
 from os import path
 from sys import exit
 import re
-from bs4 import BeautifulSoup as bs # use if you want prettify feature, else feel free to uncomment it
+# from bs4 import BeautifulSoup as bs # use if you want prettify feature, feel free to uncomment it
 
 '''
 NOTE: This code is written to automate my blogging process to some extent.
@@ -48,7 +48,7 @@ class Convert:
 		'''
 		self.filepath = input("Enter filepath: ")
 		if not self.is_valid_file():
-			print("filepath" + str(self.filepath) + "does not exists")
+			print("filepath: " + str(self.filepath) + " does not exists")
 			exit(0)
 		else:
 			self.open_file()
@@ -115,7 +115,7 @@ class Convert:
 		'''
 		code = re.findall("([`].*?[`])", line)
 		for word in code:
-			change = "<pre>" + word[1:-1] + "</pre>"
+			change = "<code>" + word[1:-1] + "</code>"
 			line = line.replace(word, change)
 		return line
 
@@ -310,8 +310,8 @@ class Convert:
 
 					if parsed:
 						self.contents[line] = self.contents[line].replace(self.contents[line], parsed)
-				# uncomment this to stop seeing parsed output in terminal
-				print(self.contents[line])
+				# comment/uncomment this to start/stop seeing parsed output in terminal
+				# print(self.contents[line])
 			except IndexError:
 				pass
 		print("done!")
@@ -346,8 +346,6 @@ class Convert:
 
 if __name__ == '__main__':
 	o = Convert()
-	o.filepath = 'demo.md'
-	o.blog_title = 'demo'
-	o.open_file()
+	o.add_filepath()
 	o.parse()
 	o.save_parsed_html()

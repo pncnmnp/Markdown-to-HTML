@@ -2,6 +2,7 @@ import re
 import pickle
 from collections import Counter
 from string import ascii_lowercase, punctuation
+from sys import argv
 
 '''
 NOTE: This is a variant of Peter Norvig's spell coreector ( https://norvig.com/spell-correct.html )
@@ -73,12 +74,19 @@ class Spell_Corrector:
 		'''
 		return word.translate(dict((ord(punct), None) for punct in punctuation))
 
-if __name__ == '__main__':
+def main(file):
+	'''
+	returns the spelling errors and their suitable corrections
+	'''
 	obj = Spell_Corrector()
-	file, words = input("Enter file to be scanned: "), tuple()
+	words = tuple()
 	with open(file, 'r') as f:
 		words = [obj.remove_punctuation(word.lower()) for line in f for word in re.findall(r'\w+', line)]
 	for word in words:
 		corr = obj.correction(word)[1]
 		if corr != word:
 			print("Error => Original: " + word + ", Corrected: " + corr)
+
+if __name__ == '__main__':
+	file = input("Enter file to be scanned: ")
+	main(file)

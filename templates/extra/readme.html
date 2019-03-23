@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="utf-8">
+<meta name="author" content="parth_parikh">
+<meta name="description" content="readme">
+<title>readme</title>
+<link rel="stylesheet" type="text/css" href="./style.css">
+<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+</head>
+
+<body>
+<div class="blog-text">
+<p>This repository contains some <i>blogging utilities</i> made by me for my <a href="https://pncnmnp.github.io/blogs/blog.html">blog</a>.</p>
+<p>The parser here <b>can convert any Markdown file to HTML</b> with the syntax mentioned <a href="https://www.markdownguide.org/cheat-sheet/#basic-syntax">here</a> ( Note: Currently the parser does not support any extended features ).</p>
+<p>As I use <i>vanilla HTML</i> and <i>CSS</i> for my site, this specification works well and has automated my task to a great extent.</p>
+<p></p>
+<h2>How to run</h2>
+<p>To run use:</p>
+<p><code>python3.6 to_html.py</code></p>
+<p></p>
+<p>You will be asked to enter the <code>filepath</code> of your Markdown file and <code>title</code> of your HTML document.</p>
+<p>You can use <code>spelling_corrector.py</code> to scan your MD files, though I am still working to make it efficient.</p>
+<p></p>
+<h2>Manual Changes</h2>
+<p>The <code>./templates/head.txt</code> and <code>./templates/tail.txt</code> contains the head and tail of the HTML file. Basically, the markdown parsed file is being sandwiched between these two files. <b>You will have to manually make changes to both these files</b>.</p>
+<p></p>
+<p>P.S. To see the parsing of this README file, open <code>./templates/extra/readme.html</code>.</p>
+</div>
+<a href="blog.html">&crarr;</a>
+<footer>
+<hr>
+<div>
+© 2019 Parth Parikh.
+</div>
+</footer>
+
+</body>
+</html>
