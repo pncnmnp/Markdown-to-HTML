@@ -300,7 +300,7 @@ class Convert:
 			try:
 				for method in methods:
 					# To insert <ol></ol> and <ul></ul> tags
-					if method == self.ol_parse or method == self.ul_parse or method == self.header_1:
+					if method in [self.ol_parse, self.ul_parse, self.header_1]:
 						try:
 							parsed = method(self.contents[line], self.contents[line+1])
 						except IndexError:
@@ -310,6 +310,7 @@ class Convert:
 
 					if parsed:
 						self.contents[line] = self.contents[line].replace(self.contents[line], parsed)
+				# uncomment this to stop seeing parsed output in terminal
 				print(self.contents[line])
 			except IndexError:
 				pass
